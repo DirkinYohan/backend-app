@@ -27,11 +27,12 @@ public class ControladorPerfil {
 		this.servicioPerfil = servicioPerfil;
 	}
 
+    //
 	@PutMapping
-	public ResponseEntity<RespuestaUsuario> update(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
-			@Valid @RequestBody SolicitudActualizacionPerfil request) {
+	public ResponseEntity<RespuestaUsuario> update(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, //identifica al usuario autenticado actual
+			@Valid @RequestBody SolicitudActualizacionPerfil request) { // Recibe y valida los nuevos datos del perfil
 		return ResponseEntity.ok(servicioPerfil.updateProfile(principal.storeId(), principal.userId(), request));
-	}
+	}	
 
 	@PostMapping("/password")
 	public ResponseEntity<Void> changePassword(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,

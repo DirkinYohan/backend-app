@@ -30,12 +30,14 @@ public class TokenRefresh {
 	private Usuario user;
 
 	@Column(name = "token_hash", nullable = false, unique = true, length = 64)
+	//Hash del token de refrescar.
 	private String tokenHash;
 
 	@Column(name = "expires_at", nullable = false)
 	private Instant expiresAt;
 
 	@Column(name = "revoked_at")
+	//Fecha y hora en que se revocó el token de refrescar.
 	private Instant revokedAt;
 
 	@Column(name = "created_at", nullable = false, updatable = false)

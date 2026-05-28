@@ -36,14 +36,17 @@ public class ItemVenta {
 	private int quantity;
 
 	@Column(name = "purchase_price_at_sale", nullable = false, precision = 12, scale = 2)
+	//cuánto costaba el producto para el negocio cuando se vendió.
 	private BigDecimal purchasePriceAtSale;
 
 	@Column(name = "sale_price_at_sale", nullable = false, precision = 12, scale = 2)
+	//a cuánto se vendió.
 	private BigDecimal salePriceAtSale;
 
 	@Column(nullable = false, precision = 12, scale = 2)
 	private BigDecimal subtotal;
 
 	@Column(name = "profit", nullable = false, precision = 12, scale = 2)
+	//cuánto ganó el negocio con la venta del producto.
 	private BigDecimal profit;
 }

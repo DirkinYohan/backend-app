@@ -1,3 +1,4 @@
+//Proporciona los datos para las gráficas y contadores de la pantalla de inicio.
 package com.backend_app.controller;
 
 import org.springframework.http.ResponseEntity;

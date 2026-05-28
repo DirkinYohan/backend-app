@@ -19,6 +19,10 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad que representa un producto en el sistema.
+ * Contiene información sobre precios, stock, categoría y tienda asociada.
+ */
 @Getter
 @Setter
 @Entity(name = "Product")
@@ -29,10 +33,12 @@ public class Producto {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
+	// Relación con la tienda a la que pertenece el producto
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "store_id", nullable = false)
 	private Tienda store;
 
+	// Categoría del producto
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "category_id", nullable = false)
 	private Categoria category;
@@ -40,24 +46,30 @@ public class Producto {
 	@Column(nullable = false, length = 140)
 	private String name;
 
+	// Código único para el producto dentro de una misma tienda
 	@Column(nullable = false, length = 60)
 	private String code;
 
 	@Column(length = 1000)
 	private String description;
 
+	// Precio al que se compra el producto al proveedor
 	@Column(name = "purchase_price", nullable = false, precision = 12, scale = 2)
 	private BigDecimal purchasePrice;
 
+	// Precio al que se vende el producto al cliente
 	@Column(name = "sale_price", nullable = false, precision = 12, scale = 2)
 	private BigDecimal salePrice;
 
+	// Cantidad actual disponible en inventario
 	@Column(name = "stock_current", nullable = false)
 	private int stockCurrent;
 
+	// Cantidad mínima permitida antes de generar una alerta de bajo stock
 	@Column(name = "stock_minimum", nullable = false)
 	private int stockMinimum;
 
+	// Estado del producto (habilitado/deshabilitado)
 	@Column(nullable = false)
 	private boolean active = true;
 
@@ -67,6 +79,10 @@ public class Producto {
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
 
+	/**
+	 * Método ejecutado automáticamente antes de persistir el objeto.
+	 * Inicializa las fechas de creación y actualización.
+	 */
 	@PrePersist
 	void prePersist() {
 		Instant now = Instant.now();
@@ -78,6 +94,10 @@ public class Producto {
 		}
 	}
 
+	/**
+	 * Método ejecutado automáticamente antes de actualizar el objeto.
+	 * Actualiza la fecha de modificación.
+	 */
 	@PreUpdate
 	void preUpdate() {
 		updatedAt = Instant.now();

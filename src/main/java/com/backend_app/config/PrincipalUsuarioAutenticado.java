@@ -1,3 +1,5 @@
+//clase guarda información del usuario autenticado para usarla dentro de la aplicación.
+
 package com.backend_app.config;
 
 import java.util.Collection;

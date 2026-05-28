@@ -42,9 +42,9 @@ public class ControladorUsuarios {
 
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PostMapping("/users/operators")
-	public ResponseEntity<RespuestaUsuario> crearOperador(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
-			@Valid @RequestBody SolicitudCrearOperador request) {
-		return ResponseEntity.ok(servicioOperadores.crearOperador(principal.storeId(), request));
+	public ResponseEntity<RespuestaUsuario> crearOperador(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,// Inyecta el usuario actual
+			@Valid @RequestBody SolicitudCrearOperador request) { // Recibe y valida los datos del nuevo operador
+		return ResponseEntity.ok(servicioOperadores.crearOperador(principal.storeId(), request)); // Crea el nuevo operador
 	}
 
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -60,11 +60,11 @@ public class ControladorUsuarios {
 		return ResponseEntity.ok(servicioOperadores.actualizarOperador(principal.storeId(), operatorId, request));
 	}
 
-	@PreAuthorize("hasRole('ADMINISTRADOR')")
+	@PreAuthorize("hasRole('ADMINISTRADOR')") // Solo administradores pueden cambiar el estado de los operadores
 	@PostMapping("/users/operators/{operatorId}/active")
 	public ResponseEntity<RespuestaUsuario> cambiarActivoOperador(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
 			@PathVariable UUID operatorId, @RequestParam("value") boolean value) {
-		return ResponseEntity.ok(servicioOperadores.cambiarActivoOperador(principal.storeId(), operatorId, value));
+		return ResponseEntity.ok(servicioOperadores.cambiarActivoOperador(principal.storeId(), operatorId, value)); //cambia el estado del oprador 
 	}
 
 	@PreAuthorize("hasRole('ADMINISTRADOR')")

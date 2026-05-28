@@ -26,6 +26,10 @@ import com.backend_app.util.ExcepcionConflicto;
 import com.backend_app.util.ExcepcionNoEncontrado;
 import com.backend_app.util.ExcepcionSolicitudIncorrecta;
 
+/**
+ * Servicio encargado de la gestión de productos e inventario.
+ * Permite realizar operaciones CRUD, búsqueda, ajuste de stock y alertas de bajo inventario.
+ */
 @Service
 public class ServicioProductos {
 	private final RepositorioProductos productRepository;
@@ -46,9 +50,17 @@ public class ServicioProductos {
 		this.productImageRepository = productImageRepository;
 	}
 
+	/**
+	 * Crea un nuevo producto en la tienda.
+	 * 
+	 * @param storeId ID de la tienda.
+	 * @param request Datos del producto a crear.
+	 * @return El producto creado en formato DTO.
+	 */
 	@Transactional
 	public RespuestaProducto create(UUID storeId, SolicitudProductoUpsert request) {
 		String code = normalizeCode(request.code());
+		// Validar que el código de producto sea único por tienda
 		if (productRepository.existsByStore_IdAndCodeIgnoreCase(storeId, code)) {
 			throw new ExcepcionConflicto("El código ya existe");
 		}
@@ -75,12 +87,18 @@ public class ServicioProductos {
 		return toResponse(storeId, product);
 	}
 
+	/**
+	 * Busca productos por nombre, código, estado y categoría.
+	 */
 	@Transactional(readOnly = true)
 	public List<RespuestaProducto> search(UUID storeId, String q, Boolean active, UUID categoryId) {
 		String query = (q == null || q.isBlank()) ? null : q.trim();
 		return productRepository.search(storeId, query, active, categoryId).stream().map(p -> toResponse(storeId, p)).toList();
 	}
 
+	/**
+	 * Obtiene un producto específico por su ID.
+	 */
 	@Transactional(readOnly = true)
 	public RespuestaProducto get(UUID storeId, UUID productId) {
 		Producto product = productRepository.findByIdAndStore_Id(productId, storeId)
@@ -88,12 +106,16 @@ public class ServicioProductos {
 		return toResponse(storeId, product);
 	}
 
+	/**
+	 * Actualiza la información de un producto existente.
+	 */
 	@Transactional
 	public RespuestaProducto update(UUID storeId, UUID productId, SolicitudProductoUpsert request) {
 		Producto product = productRepository.findByIdAndStore_Id(productId, storeId)
 				.orElseThrow(() -> new ExcepcionNoEncontrado("Producto no encontrado"));
 
 		String code = normalizeCode(request.code());
+		// Validar unicidad del código si ha cambiado
 		if (!code.equalsIgnoreCase(product.getCode()) && productRepository.existsByStore_IdAndCodeIgnoreCase(storeId, code)) {
 			throw new ExcepcionConflicto("El código ya existe");
 		}
@@ -112,12 +134,17 @@ public class ServicioProductos {
 		return toResponse(storeId, product);
 	}
 
+	/**
+	 * Elimina un producto. Si tiene registros asociados (ventas o movimientos), 
+	 * solo se desactiva lógicamente.
+	 */
 	@Transactional
 	public void delete(UUID storeId, UUID productId) {
 		Producto product = productRepository.findByIdAndStore_Id(productId, storeId)
 				.orElseThrow(() -> new ExcepcionNoEncontrado("Producto no encontrado"));
 		long saleRefs = productRepository.countSaleItemsByProduct(storeId, productId);
 		long movementRefs = movementRepository.countByStoreIdAndProductId(storeId, productId);
+		
 		if (saleRefs > 0 || movementRefs > 0) {
 			product.setActive(false);
 			productRepository.save(product);
@@ -126,6 +153,9 @@ public class ServicioProductos {
 		productRepository.delete(product);
 	}
 
+	/**
+	 * Activa o desactiva un producto.
+	 */
 	@Transactional
 	public RespuestaProducto setActive(UUID storeId, UUID productId, boolean active) {
 		Producto product = productRepository.findByIdAndStore_Id(productId, storeId)
@@ -135,6 +165,15 @@ public class ServicioProductos {
 		return toResponse(storeId, product);
 	}
 
+	/**
+	 * Realiza un ajuste manual de stock y registra el movimiento.
+	 * 
+	 * @param storeId ID de la tienda.
+	 * @param userId ID del usuario que realiza el ajuste.
+	 * @param productId ID del producto.
+	 * @param request Contiene el nuevo stock y observaciones.
+	 * @return El producto con el stock actualizado.
+	 */
 	@Transactional
 	public RespuestaProducto updateStock(UUID storeId, UUID userId, UUID productId, SolicitudActualizarStockProducto request) {
 		Producto product = productRepository.findByIdAndStore_Id(productId, storeId)
@@ -154,6 +193,7 @@ public class ServicioProductos {
 		product.setStockCurrent(newStock);
 		product = productRepository.save(product);
 
+		// Registrar el movimiento de ajuste en el historial
 		MovimientoInventario movement = new MovimientoInventario();
 		movement.setStore(product.getStore());
 		movement.setMovementType(TipoMovimiento.ADJUSTMENT);
@@ -166,6 +206,9 @@ public class ServicioProductos {
 		return toResponse(storeId, product);
 	}
 
+	/**
+	 * Obtiene una lista de productos con stock por debajo del mínimo establecido.
+	 */
 	@Transactional(readOnly = true)
 	public List<RespuestaProducto> lowStock(UUID storeId, int limit) {
 		int safeLimit = Math.max(1, Math.min(limit, 50));
@@ -173,6 +216,9 @@ public class ServicioProductos {
 				.toList();
 	}
 
+	/**
+	 * Convierte una entidad Producto a su representación DTO de respuesta.
+	 */
 	private RespuestaProducto toResponse(UUID storeId, Producto product) {
 		return new RespuestaProducto(product.getId(), product.getCategory().getId(), product.getCategory().getName(), product.getName(),
 				product.getCode(), product.getDescription(), productImageRepository.listIds(storeId, product.getId()),

@@ -12,12 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @Order(0)
+@Profile("dev")
 public class CorreccionesInicioBaseDatos implements ApplicationRunner {
 	private static final Logger log = LoggerFactory.getLogger(CorreccionesInicioBaseDatos.class);
 

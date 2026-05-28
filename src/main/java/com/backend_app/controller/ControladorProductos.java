@@ -25,6 +25,10 @@ import com.backend_app.service.ServicioProductos;
 
 import jakarta.validation.Valid;
 
+/**
+ * Controlador REST para la gestión de productos.
+ * Proporciona endpoints para buscar, crear, actualizar, eliminar y gestionar el stock de productos.
+ */
 @Validated
 @RestController
 @RequestMapping("/api/products")
@@ -35,6 +39,15 @@ public class ControladorProductos {
 		this.servicioProductos = servicioProductos;
 	}
 
+	/**
+	 * Busca productos según filtros opcionales.
+	 * 
+	 * @param principal Usuario autenticado.
+	 * @param q Término de búsqueda (nombre o código).
+	 * @param active Filtrar por estado activo/inactivo.
+	 * @param categoryId Filtrar por categoría.
+	 * @return Lista de productos que coinciden con los criterios.
+	 */
 	@GetMapping
 	public ResponseEntity<List<RespuestaProducto>> search(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
 			@RequestParam(name = "q", required = false) String q,
@@ -43,17 +56,26 @@ public class ControladorProductos {
 		return ResponseEntity.ok(servicioProductos.search(principal.storeId(), q, active, categoryId));
 	}
 
+	/**
+	 * Obtiene productos con bajo stock.
+	 */
 	@GetMapping("/low-stock")
 	public ResponseEntity<List<RespuestaProducto>> lowStock(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
 			@RequestParam(name = "limit", defaultValue = "10") int limit) {
 		return ResponseEntity.ok(servicioProductos.lowStock(principal.storeId(), limit));
 	}
 
+	/**
+	 * Obtiene el detalle de un producto por su ID.
+	 */
 	@GetMapping("/{productId}")
 	public ResponseEntity<RespuestaProducto> get(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId) {
 		return ResponseEntity.ok(servicioProductos.get(principal.storeId(), productId));
 	}
 
+	/**
+	 * Crea un nuevo producto. Solo accesible por administradores.
+	 */
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PostMapping
 	public ResponseEntity<RespuestaProducto> create(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal,
@@ -61,6 +83,9 @@ public class ControladorProductos {
 		return ResponseEntity.ok(servicioProductos.create(principal.storeId(), request));
 	}
 
+	/**
+	 * Actualiza un producto existente. Solo accesible por administradores.
+	 */
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PutMapping("/{productId}")
 	public ResponseEntity<RespuestaProducto> update(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId,
@@ -68,6 +93,9 @@ public class ControladorProductos {
 		return ResponseEntity.ok(servicioProductos.update(principal.storeId(), productId, request));
 	}
 
+	/**
+	 * Activa o desactiva un producto. Solo accesible por administradores.
+	 */
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PostMapping("/{productId}/active")
 	public ResponseEntity<RespuestaProducto> setActive(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId,
@@ -75,6 +103,9 @@ public class ControladorProductos {
 		return ResponseEntity.ok(servicioProductos.setActive(principal.storeId(), productId, value));
 	}
 
+	/**
+	 * Actualiza manualmente el stock de un producto. Solo accesible por administradores.
+	 */
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PostMapping("/{productId}/stock")
 	public ResponseEntity<RespuestaProducto> updateStock(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId,
@@ -82,6 +113,9 @@ public class ControladorProductos {
 		return ResponseEntity.ok(servicioProductos.updateStock(principal.storeId(), principal.userId(), productId, request));
 	}
 
+	/**
+	 * Elimina un producto. Solo accesible por administradores.
+	 */
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<Void> delete(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId) {

@@ -30,7 +30,7 @@ public class Usuario {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "store_id", nullable = false)
 	private Tienda store;
-
+     //Guarda el enum como texto.
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 32)
 	private Rol role;
@@ -43,7 +43,7 @@ public class Usuario {
 
 	@Column(nullable = false, length = 40)
 	private String identification;
-
+    //inuque email no puede repetirse
 	@Column(nullable = false, unique = true, length = 120)
 	private String email;
 

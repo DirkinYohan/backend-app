@@ -1,3 +1,4 @@
+//Registra en consola cuánto tiempo toma procesar cada solicitud HTTP (solo en desarrollo).
 package com.backend_app.config;
 
 import java.net.URI;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@Profile("dev")
 public class FiltroMedicionRendimiento extends OncePerRequestFilter {
 	private static final HttpClient CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
 

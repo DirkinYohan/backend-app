@@ -1,3 +1,4 @@
+//guardar y validar la configuración CORS del sistema. qué frontend puede conectarse al backend.
 package com.backend_app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

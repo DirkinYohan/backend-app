@@ -1,3 +1,4 @@
+//Intercepta cada petición para validar que el token enviado sea auténtico
 package com.backend_app.config;
 
 import java.io.IOException;

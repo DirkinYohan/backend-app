@@ -25,6 +25,7 @@ import lombok.Setter;
 public class MovimientoInventario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	//Identificador único para cada movimiento de inventario.
 	private UUID id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

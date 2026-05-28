@@ -1,3 +1,4 @@
+//guardar y validar la configuración JWT del sistema. qué datos se van a usar para firmar y verificar los tokens.
 package com.backend_app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

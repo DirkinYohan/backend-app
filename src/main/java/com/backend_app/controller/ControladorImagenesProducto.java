@@ -36,6 +36,7 @@ public class ControladorImagenesProducto {
 	@PreAuthorize("hasRole('ADMINISTRADOR')")
 	@PostMapping("/{productId}/images")
 	public ResponseEntity<List<UUID>> subir(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID productId,
+		//recibe archivos enviados desde frontend.
 			@RequestParam("files") List<MultipartFile> files) {
 		return ResponseEntity.ok(servicioImagenes.subir(principal.storeId(), productId, files));
 	}
@@ -53,6 +54,8 @@ public class ControladorImagenesProducto {
 		return ResponseEntity.noContent().build();
 	}
 
+	//Obtiene una imagen de producto por su ID.
+	//obtiene una imagen por su ID y la devuelve al frontend para mostrarla.
 	@GetMapping("/images/{imageId}")
 	public ResponseEntity<ByteArrayResource> obtener(@AuthenticationPrincipal PrincipalUsuarioAutenticado principal, @PathVariable UUID imageId) {
 		ImagenProducto image = servicioImagenes.obtenerImagen(principal.storeId(), imageId);

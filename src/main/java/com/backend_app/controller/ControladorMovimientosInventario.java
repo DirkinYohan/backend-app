@@ -1,3 +1,4 @@
+//Controlador para manejar las solicitudes de movimientos de inventario.
 package com.backend_app.controller;
 
 import java.time.Instant;
